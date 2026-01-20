@@ -70,16 +70,28 @@ const handleMulterError = (err) => {
  */
 const transformError = (error) => {
   // MongoDB errors
-  if (error.name === 'CastError') return handleCastError(error);
-  if (error.code === 11000) return handleDuplicateFieldsError(error);
-  if (error.name === 'ValidationError') return handleValidationError(error);
+  if (error.name === 'CastError') {
+    return handleCastError(error);
+  }
+  if (error.code === 11000) {
+    return handleDuplicateFieldsError(error);
+  }
+  if (error.name === 'ValidationError') {
+    return handleValidationError(error);
+  }
 
   // JWT errors
-  if (error.name === 'JsonWebTokenError') return handleJWTError();
-  if (error.name === 'TokenExpiredError') return handleJWTExpiredError();
+  if (error.name === 'JsonWebTokenError') {
+    return handleJWTError();
+  }
+  if (error.name === 'TokenExpiredError') {
+    return handleJWTExpiredError();
+  }
 
   // Multer errors
-  if (error.name === 'MulterError') return handleMulterError(error);
+  if (error.name === 'MulterError') {
+    return handleMulterError(error);
+  }
 
   // Return original error if no transformation needed
   return error;

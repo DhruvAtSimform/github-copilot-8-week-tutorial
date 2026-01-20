@@ -733,6 +733,7 @@ This week focuses on mastering Copilot Chat for real-world development tasks:
 - `/simplify` - Refactor for clarity
 
 ### !!! NOTE: @workspace or slash commands generally works in edit mode and not in agent mode
+
 #### So it can not use file tools to automatically edit, create or delete your files. You need to do it manually.
 
 ### 🔍 Activity 1: Explain This Function
@@ -1119,3 +1120,182 @@ express-rest-api/
   "*.js": ["eslint --fix", "prettier --write"]
 }
 ```
+
+## Week 4: Copilot custom instructions, prompt files, custom agents
+
+To effectively use GitHub Copilot in VS Code, it is essential to understand how the "Agent System Prompt" is constructed. Every message you send is actually part of a much larger document (the context window) that includes system rules, environment info, and project metadata.
+
+---
+
+### 1. The Anatomy of a Copilot Prompt
+
+Before your specific question reaches the AI, VS Code builds a hierarchy of information:
+
+1. **System Prompt:** Contains core identity (e.g., "You are an AI coding assistant"), general instructions for the specific model being used, and tool-use rules (how to use the terminal, editor, etc.).
+2. **Environment & Workspace Info:** Details about your OS, project folder structure, and file names.
+3. **Context Info:** Current date/time, open terminals, and any files you have explicitly attached to the chat.
+4. **User Message:** Your actual prompt or question.
+
+Understanding where instructions are "injected" into this hierarchy determines how much influence they have over the AI’s behavior.
+
+---
+
+### 2. Custom Instructions
+
+Custom instructions are designed to provide **high-level, persistent context** about your project.
+
+- **What they are:** Files that tell the AI about your project architecture, specific coding patterns, or global rules (e.g., "Always use Tailwind CSS" or "Follow Clean Architecture").
+- **Where they live:** Can be stored globally in user data or project-specifically in the `.github/instructions/` folder.
+- **Prompt Placement:** They are appended to the very end of the **System Prompt**.
+- **When to use them:**
+- Defining project-wide standards.
+- Explaining complex architectural decisions.
+- Setting a "source of truth" for the AI to refer to in every single interaction.
+
+---
+
+### 3. Prompt Files
+
+Prompt files are **reusable templates** for specific tasks. They are more dynamic than custom instructions because you choose when to trigger them.
+
+- **What they are:** Markdown files that contain specific prompts. You invoke them in the chat using the `/` command.
+- **Key Feature (Model Switching):** You can specify a preferred AI model in the file's front-matter. This allows you to use a "Premium" model (like Claude 3.5 Opus) for complex logic and a "Small/Free" model (like GPT-4o mini) for repetitive tasks.
+- **Prompt Placement:** The contents are injected into the **User Prompt** section.
+- **When to use them:**
+- Creating unit tests.
+- Reviewing code for security.
+- Generating documentation.
+- Any task where you want a specific "formulaic" response every time.
+
+---
+
+### 4. Custom Agents
+
+Custom Agents (formerly known as "Custom Modes") define the **identity and behavior** of the AI.
+
+- **What they are:** Advanced configurations that give the AI a specific "role" and set of tools. They are less about _facts_ and more about _process_.
+- **Identity-Driven:** Unlike instructions (which give data), agents define a persona (e.g., a "Planning Agent" that must research before suggesting code).
+- **Prompt Placement:** These are added at the absolute end of the **System Prompt**, giving them the "final word" on how the AI should behave.
+- **When to use them:**
+- When you need a specific workflow (e.g., a "Plan Mode" that prevents the AI from writing code until you approve a strategy).
+- When you want to override the default Copilot behavior entirely.
+
+---
+
+## 5. Comparison Summary
+
+| Feature                 | Primary Goal        | UI Trigger     | Logic Location |
+| ----------------------- | ------------------- | -------------- | -------------- |
+| **Custom Instructions** | Project Context     | Always Active  | System Prompt  |
+| **Prompt Files**        | Task Automation     | `/filename`    | User Prompt    |
+| **Custom Agents**       | Behavioral Identity | Agent Selector | System Prompt  |
+
+---
+
+## 6. Advanced Concept: Avoiding "Context Rot"
+
+As a conversation grows longer, the AI's accuracy tends to drop. This is known as **Context Rot**. Even high-end models can drop from 90% accuracy to 30% as the prompt nears its token limit.
+
+**Strategy for Success:**
+
+1. **Keep it clean:** Start new chat sessions frequently to reset the context.
+2. **Use specific tools:** Use Prompt Files to handle the "heavy lifting" of the prompt so the system doesn't have to guess what you want.
+3. **The "Three-Step" Workflow:**
+
+- **Step 1 (Plan):** Use a high-end model via a **Prompt File** to create an implementation plan (a markdown file).
+- **Step 2 (Generate):** Use the high-end model to write the actual code into that markdown file.
+- **Step 3 (Implement):** Use a **Custom Agent** with a smaller, faster model to read that markdown file and apply the changes to your actual source code.
+
+This strategy maximizes the "intelligence" of expensive models while using cheap models for the manual labor of applying file changes.
+
+---
+
+This comprehensive guide, based on the video by Burke Holland, explains the concept of **Agent Skills** in VS Code—a powerful way to extend GitHub Copilot’s capabilities beyond its default features.
+
+## Mastering Agent Skills in GitHub Copilot
+
+Agent Skills are a new, experimental way to provide instructions and capabilities to GitHub Copilot. While they share similarities with custom instructions and prompt files, they are unique in their ability to bundle together scripts, templates, and complex workflows into a modular unit.
+
+---
+
+### 1. What are Agent Skills?
+
+At their core, skills are instruction files that Copilot can "learn" and execute when it detects they are relevant to a user's request.
+
+- **Modular & Bundled:** Unlike a single instruction file, a "Skill" is a folder that can contain a main instruction file (`skill.md`), scripts (Node.js, Python, etc.), and templates.
+- **Progressive Loading:** To save space in the AI's "context window," the full content of a skill is only loaded if the AI decides it's needed based on its name and description.
+- **Auto-Detection:** You don't need to manually invoke a skill. If the description matches your request, Copilot automatically reads and follows the skill's instructions.
+
+---
+
+### 2. Anatomy of a Skill
+
+A skill is defined by a specific folder structure within your project (typically under `.github/skills/`).
+
+### Required: The `skill.md` File
+
+Every skill must have a `skill.md` file at its root with specific metadata:
+
+- **Name:** A clear name for the skill.
+- **Description:** A detailed explanation of what the skill does. This is crucial because it's how the AI knows when to trigger the skill.
+- **Instructions:** The step-by-step workflow or rules the AI should follow when the skill is active.
+
+### Optional: Scripts and Templates
+
+- **Scripts:** You can include executable scripts (e.g., `.js` or `.py` files) that the AI can run to perform tasks like gathering system info or processing data.
+- **Templates:** You can define specific response formats in separate files to ensure the AI's output is consistent every time the skill is triggered.
+
+---
+
+### 3. How Skills Work Internally
+
+The process follows a "Just-in-Time" loading mechanism to maintain performance:
+
+1. **Discovery:** When you start a chat, VS Code sends only the **names and descriptions** of available skills to the model.
+2. **Triggering:** If the AI determines a skill is relevant to your prompt, it makes a "tool call" to read the full `skill.md` file.
+3. **Execution:** The AI then follows the instructions in the markdown file, which might include reading more files, running scripts, or applying templates.
+
+---
+
+### 4. Skills vs. Other AI Tools
+
+It can be confusing to know when to use a Skill versus other Copilot features. Here is the recommended breakdown:
+
+| Feature                 | Best For...                                                            | Example                                                         |
+| ----------------------- | ---------------------------------------------------------------------- | --------------------------------------------------------------- |
+| **Custom Instructions** | Project-wide facts and rules that should _always_ be active.           | "Always use TypeScript and Tailwind."                           |
+| **Prompt Files**        | Reusable task templates that you manually invoke.                      | `/unit-test` or `/refactor`                                     |
+| **Custom Agents**       | Defining a specific behavioral "persona" or global workflow.           | A "Plan Mode" agent that researches before coding.              |
+| **Agent Skills**        | Teaching the AI **new capabilities** or complex, multi-file workflows. | Teaching the AI how to read PDFs or interact with a custom API. |
+
+---
+
+### 5. Practical Example: The PDF Skill
+
+A powerful use case for skills is teaching Copilot how to handle file types it doesn't natively support, like PDFs.
+
+- **The Problem:** By default, Copilot cannot "read" the contents of a PDF file.
+- **The Skill Solution:** A PDF skill can include a script that uses a library (like Python's `pypdf`) to extract text.
+- **The Workflow:** When you ask "What's in this PDF?", Copilot detects the PDF skill, runs the extraction script, and then provides an answer based on the output.
+
+---
+
+### 6. Getting Started
+
+To use Agent Skills today, follow these steps:
+
+1. **Enable Experimental Support:** In VS Code settings, search for "skills" and ensure the experimental agent skills setting is toggled **ON**.
+2. **Create the Folder:** Create a `.github/skills/` directory in your project.
+3. **Define Your Skill:** Create a subfolder (e.g., `my-skill/`) with a `skill.md` file.
+4. **Verify:** Ask Copilot "What skills do you have?" to see if it detects your new creation.
+
+### Resources
+
+You can find pre-made skills to copy into your projects at:
+
+- **Awesome Copilot:** `github.com/github/awesomecopilot`
+- **Anthropic Skills:** `github.com/anthropic/skills`
+
+---
+
+**Study Tip:** Think of **Instructions** as the _Rules of the House_, **Prompt Files** as _Specific Tools_, **Agents** as _Staff Members_, and **Skills** as _Specialized Training_ that allows those staff members to do things they couldn't do before.

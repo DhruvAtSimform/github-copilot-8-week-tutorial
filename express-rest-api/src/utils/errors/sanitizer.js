@@ -31,7 +31,9 @@ const SENSITIVE_FIELDS = [
  * @returns {Object} - Sanitized body with sensitive fields redacted
  */
 const sanitizeRequestBody = (body) => {
-  if (!body || typeof body !== 'object') return body;
+  if (!body || typeof body !== 'object') {
+    return body;
+  }
 
   const sanitized = { ...body };
 
@@ -51,7 +53,9 @@ const sanitizeRequestBody = (body) => {
  * @returns {Object} - Sanitized headers
  */
 const sanitizeHeaders = (headers) => {
-  if (!headers || typeof headers !== 'object') return headers;
+  if (!headers || typeof headers !== 'object') {
+    return headers;
+  }
 
   const sanitized = { ...headers };
   const sensitiveHeaders = [

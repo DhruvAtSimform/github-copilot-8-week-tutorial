@@ -46,6 +46,7 @@ const errorHandler = (err, req, res, _next) => {
  */
 const catchAsync = (fn) => {
   return (req, res, next) => {
+    // eslint-disable-next-line promise/no-callback-in-promise
     Promise.resolve(fn(req, res, next)).catch(next);
   };
 };

@@ -1,4 +1,5 @@
 const IndexController = require('../controllers/index');
+const TimezoneController = require('../controllers/timezoneController');
 const { catchAsync } = require('../middlewares/errorHandler');
 const AppError = require('../utils/errors/AppError');
 
@@ -6,10 +7,13 @@ const setRoutes = (app) => {
   // Example routes with error handling
   app.get('/', IndexController.getIndex);
 
+  // Timezone endpoints
+  app.get('/api/timezones', catchAsync(TimezoneController.getTimezonesByCountry));
+
   // Example: Route with async error handling
   app.get(
     '/api/example',
-    catchAsync(async (_req, res) => {
+    catchAsync((_req, res) => {
       // Simulating async operation
       const data = { message: 'Success', timestamp: new Date().toISOString() };
       res.status(200).json({ status: 'success', data });
