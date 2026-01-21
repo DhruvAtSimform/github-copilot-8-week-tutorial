@@ -74,8 +74,4 @@ const sanitizeHeaders = (headers) => {
   return sanitized;
 };
 
-module.exports = {
-  sanitizeRequestBody,
-  sanitizeHeaders,
-  SENSITIVE_FIELDS,
-};
+export { sanitizeRequestBody, sanitizeHeaders, SENSITIVE_FIELDS };

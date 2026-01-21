@@ -1,12 +1,12 @@
-const express = require('express');
-const helmet = require('helmet');
-const cors = require('cors');
-const compression = require('compression');
-const morgan = require('morgan');
-const { setRoutes } = require('./routes/index');
-const { errorHandler } = require('./middlewares/errorHandler');
-const AppError = require('./utils/errors/AppError');
-const logger = require('./utils/logger');
+import express from 'express';
+import helmet from 'helmet';
+import cors from 'cors';
+import compression from 'compression';
+import morgan from 'morgan';
+import { setRoutes } from './routes/index.js';
+import { errorHandler } from './middlewares/errorHandler.js';
+import AppError from './utils/errors/AppError.js';
+import logger from './utils/logger.js';
 
 const app = express();
 
@@ -56,8 +56,7 @@ app.use(errorHandler);
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   logger.info(
-    `Server is running on port ${PORT} in ${
-      process.env.NODE_ENV || 'development'
+    `Server is running on port ${PORT} in ${process.env.NODE_ENV || 'development'
     } mode`
   );
 });

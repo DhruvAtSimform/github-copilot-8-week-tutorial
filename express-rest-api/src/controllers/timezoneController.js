@@ -1,5 +1,5 @@
-const timezoneService = require('../services/timezoneService');
-const logger = require('../utils/logger');
+import timezoneService from '../services/timezoneService.js';
+import logger from '../utils/logger.js';
 
 /**
  * Controller for timezone-related endpoints
@@ -47,4 +47,4 @@ class TimezoneController {
   }
 }
 
-module.exports = TimezoneController;
+export default TimezoneController;

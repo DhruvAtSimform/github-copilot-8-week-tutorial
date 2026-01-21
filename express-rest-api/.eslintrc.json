@@ -1,6 +1,5 @@
 {
   "env": {
-    "browser": true,
     "es2021": true,
     "node": true
   },
@@ -11,7 +10,8 @@
   ],
   "plugins": ["n", "promise", "security"],
   "parserOptions": {
-    "ecmaVersion": 12
+    "ecmaVersion": 12,
+    "sourceType": "module"
   },
   "rules": {
     "indent": ["error", 2],

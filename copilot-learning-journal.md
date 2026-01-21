@@ -1212,7 +1212,7 @@ This strategy maximizes the "intelligence" of expensive models while using cheap
 
 This comprehensive guide, based on the video by Burke Holland, explains the concept of **Agent Skills** in VS Code—a powerful way to extend GitHub Copilot’s capabilities beyond its default features.
 
-## Mastering Agent Skills in GitHub Copilot
+### Mastering Agent Skills in GitHub Copilot
 
 Agent Skills are a new, experimental way to provide instructions and capabilities to GitHub Copilot. While they share similarities with custom instructions and prompt files, they are unique in their ability to bundle together scripts, templates, and complex workflows into a modular unit.
 
@@ -1299,3 +1299,234 @@ You can find pre-made skills to copy into your projects at:
 ---
 
 **Study Tip:** Think of **Instructions** as the _Rules of the House_, **Prompt Files** as _Specific Tools_, **Agents** as _Staff Members_, and **Skills** as _Specialized Training_ that allows those staff members to do things they couldn't do before.
+
+### Deliverable and Summary
+
+I have added 2 files: 1. general instructions.md and 2. api.md for new/edit APIs task
+
+Observations:
+
+1.  general file stays at .github/copilot-instructions.md and being added in all agent prompt
+2.  api.md files stays at .github/instructions/api.md and is not directly added in user ref. section
+
+- However, I noticed agent reading it after noticing the create new API prompt
+- It helps but still smaller coding practices like not using the async for sync function could be missed
+- We must use eslint and other rule enforcement and do not rely fully on AI tools and systems.
+
+## Week 4 - AI Agents and MCP servers
+
+This study guide explains the **Model Context Protocol (MCP)** based on the Codebasics tutorial. It breaks down how MCP acts as a unified interface for AI applications to interact with external tools and data.
+
+---
+
+### What is Model Context Protocol (MCP)?
+
+MCP is a standardized way for Large Language Models (LLMs) to interact with external tools and knowledge sources. Think of it as the **"USB-C moment for AI."** Just as a USB-C port allows a computer to connect to keyboards, monitors, and drives through a single interface, MCP allows an AI client to connect to various "servers" (like Google Maps, Yahoo Finance, or local databases) using one uniform protocol.
+
+---
+
+### The Evolution: Why do we need MCP?
+
+- **Phase 1: Pure LLMs:** Models relied only on training data and couldn't access real-time info.
+- **Phase 2: Agentic Frameworks:** Developers wrote custom "glue code" to connect LLMs to specific APIs (e.g., Yahoo Finance).
+- **The Problem:** Maintaining glue code for every different API is a nightmare. If an API changes, the code breaks.
+- **Phase 3: MCP Standard:** Companies (like Yahoo or Google) build a single **MCP Server**. Any AI application using an **MCP Client** can instantly communicate with it without custom glue code for every specific tool.
+
+---
+
+### Core Components of MCP
+
+The protocol consists of two main parts:
+
+1. **MCP Client:** Your AI application (e.g., a chatbot or VS Code extension). It maintains a configuration file listing all available servers.
+2. **MCP Server:** A specialized wrapper built by a service provider (like Google or a private company). It exposes capabilities to the client in a standardized format.
+
+---
+
+### The Three Main Capabilities of an MCP Server
+
+Every MCP server can expose three types of features to the AI:
+
+1. **Tools (Executable Functions):**
+
+- Functions the LLM can call to perform actions (e.g., `search_places` in Google Maps).
+- The server provides a **Description** and an **Input Schema** (parameters like latitude/longitude).
+- The LLM uses its intelligence to read the description and decide which tool to call based on the user's question.
+
+2. **Resources (Knowledge/Data):**
+
+- Standardized access to data sources such as PDF files, database records, or Amazon S3 buckets.
+- The client uses `list_resources` to see what information the server can provide.
+
+3. **Prompts (Templates):**
+
+- Pre-defined prompt templates provided by the server developer.
+- This helps AI engineers interact with a specific API correctly by using "expert-approved" instructions for that specific data source.
+
+---
+
+### How the Communication Works (Step-by-Step)
+
+1. **Initialization:** When the AI application (Client) starts, it calls `list_tools`, `list_resources`, and `list_prompts` from all connected servers.
+2. **Discovery:** The client now has a full map of everything it can do.
+3. **Reasoning:** When a user asks a question (e.g., "Find hiking spots in Ladakh"), the LLM reviews the tool descriptions.
+4. **Parameter Extraction:** The LLM identifies that it needs the "Google Maps" tool and extracts "Ladakh" as the location parameter.
+5. **Execution:** The client sends a request to the server, the server calls the actual API (like Google Maps REST API), and returns the data in a standardized format.
+
+---
+
+### Technical Implementation Details
+
+- **Languages:** MCP servers can be built using **TypeScript** or **Python** (using SDKs provided by companies like Anthropic).
+- **Standardization:** The server must adhere to a specific **Input Schema** (JSON-based) so the client knows exactly what parameters to send.
+- **Encapsulation:** MCP is not replacing REST or HTTP; it is a **wrapper**. Internally, the MCP server still makes traditional API calls, but it hides that complexity from the LLM.
+
+---
+
+### Key Takeaways for AI Engineers
+
+- **Reduced Maintenance:** You don't have to update your app every time an external API changes; the MCP server handles that translation.
+- **Scalability:** Centralized code means a company can build one MCP server that powers 20 different internal AI applications.
+- **Early Days:** MCP is currently in its early stages but has massive potential to simplify the global AI ecosystem.
+
+---
+
+**Study Tip:** If you are building a server, focus on writing **high-quality descriptions** for your tools. The LLM relies entirely on those descriptions to understand when and how to use your code!
+
+![Copilot Learning](images/image.png)
+
+The Model Context Protocol (MCP) transforms VS Code Copilot from a code-suggester into a true **AI Agent** capable of interacting with your databases, documentation, and external APIs.
+
+For a Node.js backend developer, this means Copilot can now write a migration, verify it against your local database, and then create a GitHub PR—all without you leaving the chat interface.
+
+---
+
+### 🛠️ Comprehensive Guide: Setting up MCP with Copilot
+
+### 1. Prerequisites
+
+- **VS Code:** Version 1.99 or later (Stable or Insiders).
+- **Extensions:** Ensure **GitHub Copilot** and **GitHub Copilot Chat** are installed.
+- **Enable MCP:** Go to `Settings (Cmd+,)` and search for `chat.mcp.enabled`. Ensure it is checked.
+
+### 2. Configuration Options
+
+You can configure MCP servers at two levels:
+
+| Level         | File Path                                                                            | Use Case                                                                       |
+| ------------- | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ |
+| **Global**    | `~/Library/Application Support/Code/User/globalStorage/github.copilot-chat/mcp.json` | General tools like GitHub, Google Search, or local file systems.               |
+| **Workspace** | `.vscode/mcp.json`                                                                   | Project-specific tools like **Prisma**, **Redis**, or a specific internal API. |
+
+### 3. Adding a Server
+
+To add a server to your project:
+
+1. Create a `.vscode/mcp.json` file in your root directory.
+2. Define your server using the `stdio` transport (standard for local Node.js tools).
+
+```json
+{
+  "mcpServers": {
+    "myServer": {
+      "command": "npx",
+      "args": ["-y", "@author/mcp-server-name"],
+      "env": {
+        "API_KEY": "your_key_here"
+      }
+    }
+  }
+}
+```
+
+---
+
+## 🚀 Top 3 MCP Servers for Node.js Backend Developers
+
+### 1. Prisma MCP Server
+
+Prisma is the industry standard for Node.js ORMs. This server allows Copilot to "see" your database schema and execute commands directly.
+
+- **Daily Value:** Instead of manually writing migrations, ask: _"Create a 'Product' table with a many-to-many relationship to 'Category' and run the migration."_
+- **Setup:**
+
+```json
+"prisma": {
+  "command": "npx",
+  "args": ["-y", "prisma", "mcp"]
+}
+
+```
+
+### 2. GitHub MCP Server
+
+Backend work often involves heavy PR management and issue trialing. This server gives Copilot access to your repository metadata.
+
+- **Daily Value:** Ask Copilot to: _"List all open PRs that are failing CI,"_ or _"Create a new issue for the bug we just found in `auth.service.ts`."_
+- **Setup:**
+
+```json
+"github": {
+  "command": "npx",
+  "args": ["-y", "@modelcontextprotocol/server-github"],
+  "env": { "GITHUB_PERSONAL_ACCESS_TOKEN": "your_token" }
+}
+
+```
+
+### 3. Redis MCP Server
+
+For backend developers handling caching, sessions, or job queues, the Redis MCP server is a game-changer for debugging.
+
+- **Daily Value:** Stop using `redis-cli` for simple checks. Ask: _"What is the TTL for the session key 'user:123'?"_ or _"Clear all keys matching 'cache:products:_'."\*
+- **Setup:**
+
+```json
+"redis": {
+  "command": "npx",
+  "args": ["-y", "@modelcontextprotocol/server-redis"],
+  "env": { "REDIS_URL": "redis://localhost:6379" }
+}
+
+```
+
+---
+
+## 🤖 How to use them in "Agent Mode"
+
+1. Open **Copilot Chat** (`Ctrl+Alt+I` or `Cmd+Shift+I`).
+2. Type `@terminal` or enter **Agent Mode** (the dropdown next to the chat input).
+3. Type `#` to see a list of available MCP tools.
+4. Simply prompt: _"Analyze my Prisma schema and tell me if I have any missing indexes on the Orders table."_ Copilot will call the Prisma MCP server, read the schema, and provide the answer.
+
+> [!TIP]
+> Use `.vscode/mcp.json` to keep your environment variables project-specific. Avoid putting sensitive API keys in your global config.
+
+Would you like me to help you write a custom MCP server for one of your internal Node.js APIs?
+
+[The Ultimate Agent Mode Tutorial in VS Code: Vision, MCP, Custom Agents & More!](https://www.youtube.com/watch?v=5NxGqnTazR8)
+
+### Deliverable:
+
+We migrated the node-express setup from using commonJs to es modules.
+
+#### Conventional refactoring:
+
+- I need to manually update the package json type and eslint config
+- Go and update each require imports to use import-export syntax
+- It would have taken at-least **half an hour** to complete it manually
+- We need to modify 16 files
+
+#### With agent mode:
+
+- I provided the well formatted prompt to an agent with role, goal and tasks
+- Agent has successfully migrated code to use the es-modules. Modified 16 files
+- Work was done in just 5 minutes of time, additionally agent also verified server status and api responses
+
+2. **I tried adding the prisma 7 to the project with agent mode but it was total failure**
+
+- First I just asked to add prisma without mentioning the version. It setup prisma 5 not even the 6
+- I asked it to migrate it to latest version 7 which is major breaking updates, gave the documentation link
+- It failed to setup properly with sqlite because docs only have typescript instructions and this is js project
+- I again provided clear refined prompt but it because of lack of documentations cloud sonnet did the job but in
+- strange way. It somehow fixed it by using the TSX to run typescript client generated by Prisma.

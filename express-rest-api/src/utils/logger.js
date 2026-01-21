@@ -1,7 +1,10 @@
-const winston = require('winston');
-const path = require('path');
+import path from 'path';
+import { fileURLToPath } from 'url';
+import winston from 'winston';
 
-const logDir = 'logs';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const logDir = path.join(__dirname, '..', '..', 'logs');
 
 // Custom format for better readability
 const customFormat = winston.format.printf(
@@ -53,4 +56,4 @@ if (process.env.NODE_ENV !== 'production') {
   );
 }
 
-module.exports = logger;
+export default logger;

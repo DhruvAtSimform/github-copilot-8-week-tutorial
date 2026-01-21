@@ -1,10 +1,10 @@
-const {
+import {
   AppError,
   transformError,
   logError,
   sendErrorDev,
   sendErrorProd,
-} = require('../utils/errors');
+} from '../utils/errors/index.js';
 
 /**
  * Global error handling middleware
@@ -51,8 +51,4 @@ const catchAsync = (fn) => {
   };
 };
 
-module.exports = {
-  errorHandler,
-  AppError,
-  catchAsync,
-};
+export { errorHandler, AppError, catchAsync };

@@ -1,4 +1,4 @@
-const AppError = require('./AppError');
+import AppError from './AppError.js';
 
 /**
  * Transform MongoDB CastError into AppError
@@ -97,7 +97,7 @@ const transformError = (error) => {
   return error;
 };
 
-module.exports = {
+export {
   handleCastError,
   handleDuplicateFieldsError,
   handleValidationError,

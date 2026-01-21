@@ -1,7 +1,7 @@
-const IndexController = require('../controllers/index');
-const TimezoneController = require('../controllers/timezoneController');
-const { catchAsync } = require('../middlewares/errorHandler');
-const AppError = require('../utils/errors/AppError');
+import IndexController from '../controllers/index.js';
+import TimezoneController from '../controllers/timezoneController.js';
+import { catchAsync } from '../middlewares/errorHandler.js';
+import AppError from '../utils/errors/AppError.js';
 
 const setRoutes = (app) => {
   // Example routes with error handling
@@ -31,4 +31,4 @@ const setRoutes = (app) => {
   });
 };
 
-module.exports = { setRoutes };
+export { setRoutes };

@@ -5,13 +5,13 @@
  * Instead of importing from multiple files, consumers can import from this index.
  */
 
-const AppError = require('./AppError');
-const { transformError } = require('./errorTransformers');
-const { logError } = require('./errorLogger');
-const { sendErrorDev, sendErrorProd } = require('./errorResponses');
-const { sanitizeRequestBody, sanitizeHeaders } = require('./sanitizer');
+import AppError from './AppError.js';
+import { transformError } from './errorTransformers.js';
+import { logError } from './errorLogger.js';
+import { sendErrorDev, sendErrorProd } from './errorResponses.js';
+import { sanitizeRequestBody, sanitizeHeaders } from './sanitizer.js';
 
-module.exports = {
+export {
   AppError,
   transformError,
   logError,

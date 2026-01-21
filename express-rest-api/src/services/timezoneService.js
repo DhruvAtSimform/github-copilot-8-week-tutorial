@@ -1,6 +1,6 @@
-const AppError = require('../utils/errors/AppError');
-const logger = require('../utils/logger');
-const { TIMEZONE_BY_COUNTRY, DEFAULT_COUNTRY_CODE } = require('../utils/constants/timezones');
+import AppError from '../utils/errors/AppError.js';
+import logger from '../utils/logger.js';
+import { TIMEZONE_BY_COUNTRY, DEFAULT_COUNTRY_CODE } from '../utils/constants/timezones.js';
 
 /**
  * Service for timezone-related business logic
@@ -77,4 +77,4 @@ class TimezoneService {
   }
 }
 
-module.exports = new TimezoneService();
+export default new TimezoneService();

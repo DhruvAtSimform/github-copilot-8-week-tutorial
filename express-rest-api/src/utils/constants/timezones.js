@@ -2,7 +2,7 @@
  * Timezone mappings by ISO 3166-1 alpha-2 country codes
  * Contains the primary timezone(s) for each country
  */
-const TIMEZONE_BY_COUNTRY = {
+export const TIMEZONE_BY_COUNTRY = {
   IN: [
     'Asia/Kolkata',
   ],
@@ -86,7 +86,4 @@ const TIMEZONE_BY_COUNTRY = {
  */
 const DEFAULT_COUNTRY_CODE = 'IN';
 
-module.exports = {
-  TIMEZONE_BY_COUNTRY,
-  DEFAULT_COUNTRY_CODE,
-};
+export { DEFAULT_COUNTRY_CODE };

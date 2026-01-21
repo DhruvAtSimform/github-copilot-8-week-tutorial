@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "A production-grade REST API built with Express.js",
   "main": "src/app.js",
+  "type": "module",
   "scripts": {
     "start": "node src/app.js",
     "dev": "nodemon src/app.js",

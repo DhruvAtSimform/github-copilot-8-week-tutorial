@@ -1,4 +1,4 @@
-const logger = require('../logger');
+import logger from '../logger.js';
 
 /**
  * Send detailed error response in development environment
@@ -58,7 +58,4 @@ const sendErrorProd = (err, req, res) => {
   });
 };
 
-module.exports = {
-  sendErrorDev,
-  sendErrorProd,
-};
+export { sendErrorDev, sendErrorProd };

@@ -1,5 +1,5 @@
-const logger = require('../logger');
-const { sanitizeRequestBody } = require('./sanitizer');
+import logger from '../logger.js';
+import { sanitizeRequestBody } from './sanitizer.js';
 
 /**
  * Log comprehensive error information for debugging
@@ -49,4 +49,4 @@ const logError = (err, req) => {
   }
 };
 
-module.exports = { logError };
+export { logError };
