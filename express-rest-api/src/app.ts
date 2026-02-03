@@ -48,7 +48,7 @@ app.get('/health', (_req: Request, res: Response): void => {
 setRoutes(app);
 
 // Handle undefined routes - must be after all other routes
-app.all('*', (req: Request, _: Response, next: NextFunction): void => {
+app.use((req: Request, _: Response, next: NextFunction): void => {
   next(new AppError(`Cannot find ${req.originalUrl} on this server`, 404));
 });
 
