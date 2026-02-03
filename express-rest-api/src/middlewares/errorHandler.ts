@@ -76,7 +76,7 @@ const catchAsync = (
 ) => {
   return (req: Request, res: Response, next: NextFunction): void => {
     // eslint-disable-next-line promise/no-callback-in-promise
-    fn(req, res, next).catch(next);
+    Promise.resolve(fn(req, res, next)).catch(next);
   };
 };
 

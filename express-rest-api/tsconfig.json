@@ -5,8 +5,8 @@
     "lib": ["ES2022"],
 
     /* Modules */
-    "module": "ESNext",
-    "moduleResolution": "node",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
     "resolveJsonModule": true,
 
     /* Emit */

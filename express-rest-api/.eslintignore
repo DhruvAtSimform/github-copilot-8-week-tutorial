@@ -1,6 +1,0 @@
-dist/
-node_modules/
-logs/
-prisma/generated/
-*.d.ts
-src/**/*.js

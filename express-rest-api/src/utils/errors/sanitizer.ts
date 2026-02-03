@@ -35,11 +35,12 @@ const sanitizeRequestBody = (body: unknown): unknown => {
     return body;
   }
 
-  const sanitized = { ...body } as Record<string, unknown>;
+  const sanitized = { ...(body as Record<string, unknown>) };
+  const sensitiveFieldsSet = new Set(SENSITIVE_FIELDS);
 
-  SENSITIVE_FIELDS.forEach((field) => {
-    if (field in sanitized) {
-      sanitized[field] = '***REDACTED***';
+  Object.keys(sanitized).forEach((key) => {
+    if (sensitiveFieldsSet.has(key)) {
+      sanitized[key] = '***REDACTED***';
     }
   });
 
@@ -57,17 +58,17 @@ const sanitizeHeaders = (headers: unknown): unknown => {
     return headers;
   }
 
-  const sanitized = { ...headers } as Record<string, unknown>;
-  const sensitiveHeaders = [
+  const sanitized = { ...(headers as Record<string, unknown>) };
+  const sensitiveHeadersSet = new Set([
     'authorization',
     'cookie',
     'x-api-key',
     'x-auth-token',
-  ];
+  ]);
 
-  sensitiveHeaders.forEach((header) => {
-    if (header in sanitized) {
-      sanitized[header] = '***REDACTED***';
+  Object.keys(sanitized).forEach((key) => {
+    if (sensitiveHeadersSet.has(key)) {
+      sanitized[key] = '***REDACTED***';
     }
   });
 

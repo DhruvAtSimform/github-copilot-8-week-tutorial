@@ -1,8 +1,8 @@
 /**
- * Timezone mappings by ISO 3166-1 alpha-2 country codes
- * Contains the primary timezone(s) for each country
+ * Initial timezone seed data by ISO 3166-1 alpha-2 country codes
+ * This is the base data; additional timezones can be managed via repository
  */
-export const TIMEZONE_BY_COUNTRY: Record<string, string[]> = {
+export const INITIAL_TIMEZONE_DATA = {
   IN: ['Asia/Kolkata'],
   US: [
     'America/New_York',
@@ -45,4 +45,4 @@ export const TIMEZONE_BY_COUNTRY: Record<string, string[]> = {
 /**
  * Default country code when none is provided
  */
-export const DEFAULT_COUNTRY_CODE = 'IN';
+export const DEFAULT_COUNTRY_CODE = 'IN' as const;
