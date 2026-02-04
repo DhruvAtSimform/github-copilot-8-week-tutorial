@@ -43,6 +43,31 @@ export const INITIAL_TIMEZONE_DATA = {
 } as const;
 
 /**
+ * Country names mapping (ISO 3166-1 alpha-2 to country name)
+ */
+export const COUNTRY_NAMES: Record<string, string> = {
+  IN: 'India',
+  US: 'United States',
+  GB: 'United Kingdom',
+  CA: 'Canada',
+  AU: 'Australia',
+  JP: 'Japan',
+  DE: 'Germany',
+  FR: 'France',
+  IT: 'Italy',
+  ES: 'Spain',
+  BR: 'Brazil',
+  MX: 'Mexico',
+  ZA: 'South Africa',
+  NG: 'Nigeria',
+  EG: 'Egypt',
+  SG: 'Singapore',
+  CN: 'China',
+  NZ: 'New Zealand',
+  RU: 'Russia',
+};
+
+/**
  * Default country code when none is provided
  */
 export const DEFAULT_COUNTRY_CODE = 'IN' as const;

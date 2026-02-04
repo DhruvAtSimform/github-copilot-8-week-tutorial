@@ -36,7 +36,7 @@ const sanitizeRequestBody = (body: unknown): unknown => {
   }
 
   const sanitized = { ...(body as Record<string, unknown>) };
-  const sensitiveFieldsSet = new Set(SENSITIVE_FIELDS);
+  const sensitiveFieldsSet = new Set<string>(SENSITIVE_FIELDS);
 
   Object.keys(sanitized).forEach((key) => {
     if (sensitiveFieldsSet.has(key)) {

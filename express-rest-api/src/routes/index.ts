@@ -13,9 +13,8 @@ const setRoutes = (app: Application): void => {
   app.get('/', (req, res) => IndexController.getIndex(req, res));
 
   // Timezone endpoints
-  app.get('/api/timezones', (req, res, next) =>
-    TimezoneController.getTimezonesByCountry(req, res, next)
-  );
+  app.get('/api/timezones', TimezoneController.getTimezonesByCountry);
+  app.get('/api/timezones/countries', TimezoneController.getAllCountries);
 
   // Example: Route with synchronous response
   app.get('/api/example', (_req: Request, res: Response): void => {

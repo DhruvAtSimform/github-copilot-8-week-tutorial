@@ -4,6 +4,7 @@ import AppError from '../utils/errors/AppError.js';
 import {
   INITIAL_TIMEZONE_DATA,
   DEFAULT_COUNTRY_CODE,
+  COUNTRY_NAMES,
 } from '../utils/constants/timezones.js';
 
 /**
@@ -330,13 +331,17 @@ class TimezoneRepository {
 
   /**
    * Get all available countries with their timezone counts
-   * @returns Map of country codes to timezone counts
+   * @returns Map of country codes to country information (name and timezone count)
    */
-  getAllCountries(): Record<string, number> {
-    const countries: Record<string, number> = {};
+  getAllCountries(): Record<string, { name: string; timezoneCount: number }> {
+    const countries: Record<string, { name: string; timezoneCount: number }> =
+      {};
 
     this.timezoneStore.forEach((timezones, countryCode: string) => {
-      countries[countryCode] = timezones.length;
+      countries[countryCode] = {
+        name: COUNTRY_NAMES[countryCode] || countryCode,
+        timezoneCount: timezones.length,
+      };
     });
 
     return countries;

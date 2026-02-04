@@ -5,14 +5,16 @@ import { Request, Response } from 'express';
  */
 class IndexController {
   /**
-   * Handle root endpoint
+   * Handle root endpoint - render timezone search page
    * GET /
    *
    * @param _req - Express request object (unused)
    * @param res - Express response object
    */
   static getIndex(_req: Request, res: Response): void {
-    res.send('Hello, World!');
+    res.render('index', {
+      title: 'Timezone Explorer',
+    });
   }
 }
 

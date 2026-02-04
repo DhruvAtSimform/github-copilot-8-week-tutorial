@@ -19,6 +19,8 @@ export default tseslint.config(
       'node_modules/',
       'logs/',
       'prisma/generated/',
+      'public/',
+      'views/',
       '**/*.d.ts',
       'src/**/*.js',
       'eslint.config.js',
