@@ -6,16 +6,22 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const logDir = path.join(__dirname, '..', '..', 'logs');
 
-// Custom format for better readability
-const customFormat = winston.format.printf(
-  ({ timestamp, level, message, ...metadata }) => {
-    let msg = `${timestamp} [${level}]: ${message}`;
-    if (Object.keys(metadata).length > 0) {
-      msg += ` ${JSON.stringify(metadata, null, 2)}`;
-    }
-    return msg;
+/**
+ * Custom format for better readability
+ */
+const customFormat = winston.format.printf((info): string => {
+  const { timestamp, level, message, ...metadata } = info;
+  let msg = `${String(timestamp)} [${level}]: ${String(message)}`;
+
+  // Remove standard winston properties from metadata
+  const cleanMetadata = { ...metadata };
+  delete cleanMetadata.service;
+
+  if (Object.keys(cleanMetadata).length > 0) {
+    msg += ` ${JSON.stringify(cleanMetadata, null, 2)}`;
   }
-);
+  return msg;
+});
 
 const logger = winston.createLogger({
   level: process.env.LOG_LEVEL || 'info',

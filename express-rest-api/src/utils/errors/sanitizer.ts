@@ -19,7 +19,7 @@ const SENSITIVE_FIELDS = [
   'access_token',
   'refreshToken',
   'refresh_token',
-];
+] as const;
 
 /**
  * Sanitize request body by removing or redacting sensitive information
@@ -27,19 +27,20 @@ const SENSITIVE_FIELDS = [
  * This prevents sensitive data like passwords and tokens from being logged,
  * which could lead to security vulnerabilities.
  *
- * @param {Object} body - Request body to sanitize
- * @returns {Object} - Sanitized body with sensitive fields redacted
+ * @param body - Request body to sanitize
+ * @returns Sanitized body with sensitive fields redacted
  */
-const sanitizeRequestBody = (body) => {
+const sanitizeRequestBody = (body: unknown): unknown => {
   if (!body || typeof body !== 'object') {
     return body;
   }
 
-  const sanitized = { ...body };
+  const sanitized = { ...(body as Record<string, unknown>) };
+  const sensitiveFieldsSet = new Set<string>(SENSITIVE_FIELDS);
 
-  SENSITIVE_FIELDS.forEach((field) => {
-    if (sanitized[field]) {
-      sanitized[field] = '***REDACTED***';
+  Object.keys(sanitized).forEach((key) => {
+    if (sensitiveFieldsSet.has(key)) {
+      sanitized[key] = '***REDACTED***';
     }
   });
 
@@ -49,25 +50,25 @@ const sanitizeRequestBody = (body) => {
 /**
  * Sanitize headers by removing authorization and cookie information
  *
- * @param {Object} headers - Request headers to sanitize
- * @returns {Object} - Sanitized headers
+ * @param headers - Request headers to sanitize
+ * @returns Sanitized headers
  */
-const sanitizeHeaders = (headers) => {
+const sanitizeHeaders = (headers: unknown): unknown => {
   if (!headers || typeof headers !== 'object') {
     return headers;
   }
 
-  const sanitized = { ...headers };
-  const sensitiveHeaders = [
+  const sanitized = { ...(headers as Record<string, unknown>) };
+  const sensitiveHeadersSet = new Set([
     'authorization',
     'cookie',
     'x-api-key',
     'x-auth-token',
-  ];
+  ]);
 
-  sensitiveHeaders.forEach((header) => {
-    if (sanitized[header]) {
-      sanitized[header] = '***REDACTED***';
+  Object.keys(sanitized).forEach((key) => {
+    if (sensitiveHeadersSet.has(key)) {
+      sanitized[key] = '***REDACTED***';
     }
   });
 

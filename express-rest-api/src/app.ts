@@ -1,17 +1,40 @@
-import express from 'express';
+import express, { Application, Request, Response, NextFunction } from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
 import compression from 'compression';
 import morgan from 'morgan';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { setRoutes } from './routes/index.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import AppError from './utils/errors/AppError.js';
 import logger from './utils/logger.js';
 
-const app = express();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const app: Application = express();
+
+// View engine setup
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, '../views'));
+
+// Static files
+app.use(express.static(path.join(__dirname, '../public')));
 
 // Security middlewares
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        scriptSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", 'data:', 'https:'],
+      },
+    },
+  })
+);
 app.use(cors());
 app.use(compression());
 
@@ -27,14 +50,16 @@ if (process.env.NODE_ENV === 'development') {
   app.use(
     morgan('combined', {
       stream: {
-        write: (message) => logger.info(message.trim()),
+        write: (message: string): void => {
+          logger.info(message.trim());
+        },
       },
     })
   );
 }
 
 // Health check endpoint
-app.get('/health', (req, res) => {
+app.get('/health', (_req: Request, res: Response): void => {
   res.status(200).json({
     status: 'ok',
     timestamp: new Date().toISOString(),
@@ -46,17 +71,18 @@ app.get('/health', (req, res) => {
 setRoutes(app);
 
 // Handle undefined routes - must be after all other routes
-app.all('*', (req, _, next) => {
+app.use((req: Request, _: Response, next: NextFunction): void => {
   next(new AppError(`Cannot find ${req.originalUrl} on this server`, 404));
 });
 
 // Global error handler - must be last middleware
 app.use(errorHandler);
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+const PORT: number = parseInt(process.env.PORT || '3000', 10);
+app.listen(PORT, (): void => {
   logger.info(
-    `Server is running on port ${PORT} in ${process.env.NODE_ENV || 'development'
+    `Server is running on port ${PORT} in ${
+      process.env.NODE_ENV || 'development'
     } mode`
   );
 });

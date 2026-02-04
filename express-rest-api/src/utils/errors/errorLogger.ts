@@ -1,5 +1,16 @@
+import { Request } from 'express';
 import logger from '../logger.js';
 import { sanitizeRequestBody } from './sanitizer.js';
+import AppError from './AppError.js';
+
+/**
+ * Extended error interface with AppError properties
+ */
+interface ErrorWithDetails extends Error {
+  statusCode?: number;
+  code?: string | number;
+  isOperational?: boolean;
+}
 
 /**
  * Log comprehensive error information for debugging
@@ -7,18 +18,20 @@ import { sanitizeRequestBody } from './sanitizer.js';
  * Includes error details, request context, and user information
  * while ensuring sensitive data is sanitized.
  *
- * @param {Error} err - The error to log
- * @param {Object} req - Express request object
+ * @param err - The error to log
+ * @param req - Express request object
  */
-const logError = (err, req) => {
+const logError = (err: Error | AppError, req: Request): void => {
+  const errorDetails = err as ErrorWithDetails;
+
   const errorLog = {
     timestamp: new Date().toISOString(),
     errorInfo: {
       message: err.message,
       name: err.name,
-      statusCode: err.statusCode || 500,
-      code: err.code,
-      isOperational: err.isOperational,
+      statusCode: errorDetails.statusCode || 500,
+      code: errorDetails.code,
+      isOperational: errorDetails.isOperational,
       stack: err.stack,
     },
     request: {
@@ -35,14 +48,18 @@ const logError = (err, req) => {
         referer: req.get('referer'),
         origin: req.get('origin'),
       },
-      userId: req.user?.id || 'anonymous',
+      userId:
+        (req as Request & { user?: { id: string } }).user?.id || 'anonymous',
     },
   };
 
   // Log based on error severity
-  if (err.statusCode >= 500 || !err.isOperational) {
+  if (
+    (errorDetails.statusCode && errorDetails.statusCode >= 500) ||
+    !errorDetails.isOperational
+  ) {
     logger.error('Internal Server Error', errorLog);
-  } else if (err.statusCode >= 400) {
+  } else if (errorDetails.statusCode && errorDetails.statusCode >= 400) {
     logger.warn('Client Error', errorLog);
   } else {
     logger.info('Error', errorLog);

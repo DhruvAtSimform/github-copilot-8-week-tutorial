@@ -1,12 +1,14 @@
 {
   "name": "express-rest-api",
   "version": "1.0.0",
-  "description": "A production-grade REST API built with Express.js",
-  "main": "src/app.js",
+  "description": "A production-grade REST API built with Express.js and TypeScript",
+  "main": "dist/app.js",
   "type": "module",
   "scripts": {
-    "start": "node src/app.js",
-    "dev": "nodemon src/app.js",
+    "start": "node dist/app.js",
+    "dev": "tsx watch src/app.ts",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
@@ -15,21 +17,33 @@
   "dependencies": {
     "compression": "^1.8.1",
     "cors": "^2.8.5",
-    "eslint": "^8.57.0",
-    "express": "^4.17.1",
+    "ejs": "^4.0.1",
+    "express": "^5.2.1",
     "helmet": "^8.1.0",
     "morgan": "^1.10.1",
-    "winston": "^3.19.0"
+    "winston": "^3.19.0",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
-    "eslint": "^7.32.0",
+    "@eslint/js": "^9.39.2",
+    "@types/compression": "^1.8.1",
+    "@types/cors": "^2.8.19",
+    "@types/ejs": "^3.1.5",
+    "@types/express": "^5.0.6",
+    "@types/morgan": "^1.9.10",
+    "@types/node": "^25.0.9",
+    "eslint": "^9.39.2",
     "eslint-plugin-n": "^17.23.2",
     "eslint-plugin-promise": "^7.2.1",
     "eslint-plugin-security": "^3.0.1",
+    "globals": "^17.0.0",
     "husky": "^7.0.4",
     "lint-staged": "^12.1.2",
     "nodemon": "^3.1.11",
-    "prettier": "^2.5.1"
+    "prettier": "^2.5.1",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.53.1"
   },
   "author": "",
   "license": "ISC"
