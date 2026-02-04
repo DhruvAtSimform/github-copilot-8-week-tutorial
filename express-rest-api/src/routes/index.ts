@@ -2,6 +2,9 @@ import { Application, Request, Response, NextFunction } from 'express';
 import IndexController from '../controllers/index.js';
 import TimezoneController from '../controllers/timezoneController.js';
 import AppError from '../utils/errors/AppError.js';
+import { validateRequest } from '../middlewares/validateRequest.js';
+import { getTimezonesQuerySchema } from '../validators/timezoneValidators.js';
+import { getCSRFToken } from '../middlewares/csrfProtection.js';
 
 /**
  * Configure application routes
@@ -9,11 +12,18 @@ import AppError from '../utils/errors/AppError.js';
  * @param app - Express application instance
  */
 const setRoutes = (app: Application): void => {
-  // Example routes with error handling
+  // Home route
   app.get('/', (req, res) => IndexController.getIndex(req, res));
 
-  // Timezone endpoints
-  app.get('/api/timezones', TimezoneController.getTimezonesByCountry);
+  // CSRF token endpoint
+  app.get('/api/csrf-token', getCSRFToken);
+
+  // Timezone endpoints with validation
+  app.get(
+    '/api/timezones',
+    validateRequest({ query: getTimezonesQuerySchema }),
+    TimezoneController.getTimezonesByCountry
+  );
   app.get('/api/timezones/countries', TimezoneController.getAllCountries);
 
   // Example: Route with synchronous response

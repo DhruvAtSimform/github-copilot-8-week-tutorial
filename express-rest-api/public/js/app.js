@@ -36,7 +36,13 @@ async function fetchCountries() {
     } catch (error) {
         console.error('Error fetching countries:', error);
         showError('Failed to load countries. Please refresh the page.');
-        countrySelect.innerHTML = '<option value="">Error loading countries</option>';
+
+        // Safely create error option
+        countrySelect.innerHTML = '';
+        const errorOption = document.createElement('option');
+        errorOption.value = '';
+        errorOption.textContent = 'Error loading countries';
+        countrySelect.appendChild(errorOption);
     }
 }
 
@@ -51,8 +57,14 @@ function populateCountrySelect(countries) {
         a[1].name.localeCompare(b[1].name)
     );
 
-    // Clear existing options
-    countrySelect.innerHTML = '<option value="">-- Select a Country --</option>';
+    // Clear existing options using safe method
+    countrySelect.innerHTML = ''; // Clear all options
+
+    // Add default option safely
+    const defaultOption = document.createElement('option');
+    defaultOption.value = '';
+    defaultOption.textContent = '-- Select a Country --';
+    countrySelect.appendChild(defaultOption);
 
     // Add country options
     countryEntries.forEach(([code, info]) => {
@@ -104,7 +116,7 @@ async function fetchTimezones(countryCode) {
 }
 
 /**
- * Display timezones in the UI
+ * Display fetched timezones in the UI (XSS-safe implementation)
  * 
  * @param {Object} data - Response data containing timezones
  */
@@ -112,20 +124,24 @@ function displayTimezones(data) {
     const country = countriesData[data.countryCode];
     const countryDisplayName = country ? country.name : data.countryCode;
 
-    // Update country name
+    // Update country name using textContent (XSS-safe)
     countryName.textContent = countryDisplayName;
 
-    // Clear previous results
+    // Clear previous results safely
     timezoneList.innerHTML = '';
 
     // Check if timezones exist
     if (!data.timezones || data.timezones.length === 0) {
-        timezoneList.innerHTML = '<p class="no-results">No timezones found for this country.</p>';
+        // Create no results message safely
+        const noResults = document.createElement('p');
+        noResults.className = 'no-results';
+        noResults.textContent = 'No timezones found for this country.';
+        timezoneList.appendChild(noResults);
         resultsContainer.classList.remove('hidden');
         return;
     }
 
-    // Create timezone items
+    // Create timezone items safely using DOM API
     data.timezones.forEach((timezone, index) => {
         const timezoneItem = document.createElement('div');
         timezoneItem.className = 'timezone-item';
@@ -133,7 +149,7 @@ function displayTimezones(data) {
 
         const timezoneName = document.createElement('div');
         timezoneName.className = 'timezone-name';
-        timezoneName.textContent = timezone.name;
+        timezoneName.textContent = timezone.name; // XSS-safe: textContent escapes HTML
 
         const timezoneOffset = document.createElement('div');
         timezoneOffset.className = 'timezone-offset';
