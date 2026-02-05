@@ -1979,7 +1979,3 @@ Integrate with SIEM/logging platforms and provide alerting configurations.
 - [NestJS Security](https://docs.nestjs.com/security/authentication)
 - [Helmet.js Documentation](https://helmetjs.github.io/)
 - [OWASP Cheat Sheet Series](https://cheatsheetseries.owasp.org/)
-
----
-
-## WEEK 8 - TBD
