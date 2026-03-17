@@ -77,7 +77,14 @@ class JokeRepository {
    * Transform provider response into a stable domain entity
    */
   private _toEntity(payload: unknown): JokeEntity {
-    const apiResponse = payload as JokeApiResponse;
+    if (!this.isValidJokeApiResponse(payload)) {
+      logger.error('Joke provider returned payload with unexpected structure', {
+        payload,
+      });
+      throw new AppError('Invalid joke response from provider', 502);
+    }
+
+    const apiResponse = payload;
 
     if (apiResponse.error) {
       logger.error('Joke provider returned an application error', {
@@ -118,6 +125,56 @@ class JokeRepository {
       payload: apiResponse,
     });
     throw new AppError('Invalid joke response from provider', 502);
+  }
+
+  private isValidJokeApiResponse(payload: unknown): payload is JokeApiResponse {
+    if (typeof payload !== 'object' || payload === null) {
+      return false;
+    }
+
+    const candidate = payload as {
+      error?: unknown;
+      category?: unknown;
+      type?: unknown;
+      joke?: unknown;
+      setup?: unknown;
+      delivery?: unknown;
+      message?: unknown;
+    };
+
+    if (typeof candidate.error !== 'boolean') {
+      return false;
+    }
+
+    if (
+      candidate.type !== undefined &&
+      candidate.type !== 'single' &&
+      candidate.type !== 'twopart'
+    ) {
+      return false;
+    }
+
+    if (candidate.category !== undefined && typeof candidate.category !== 'string') {
+      return false;
+    }
+
+    if (candidate.joke !== undefined && typeof candidate.joke !== 'string') {
+      return false;
+    }
+
+    if (candidate.setup !== undefined && typeof candidate.setup !== 'string') {
+      return false;
+    }
+
+    if (candidate.delivery !== undefined && typeof candidate.delivery !== 'string') {
+      return false;
+    }
+
+    if (candidate.message !== undefined && typeof candidate.message !== 'string') {
+      return false;
+    }
+
+    return true;
   }
 }
 
