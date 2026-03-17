@@ -62,40 +62,44 @@ const asyncHandler = (fn) => (req, res, next) =>
 
 ## 4. Minimal End-to-End Example
 
-### Route (`src/routes/user-routes.js`)
+### Route (`src/routes/user-routes.ts`)
 
-```javascript
-const express = require("express");
-const { userController } = require("../controllers");
-const { validateUserInput } = require("../middlewares/validators");
-const { asyncHandler } = require("../utils/async-handler");
+```typescript
+import { Router } from "express";
+import { userController } from "../controllers/user-controller.js";
+import { validateUserInput } from "../middlewares/validators.js";
 
-const router = express.Router();
+const router = Router();
 
-router.get("/:id", asyncHandler(userController.getById));
-router.post("/", validateUserInput, asyncHandler(userController.create));
+router.get("/:id", userController.getById);
+router.post("/", validateUserInput, userController.create);
 
-module.exports = router;
+export default router;
 ```
 
-### Controller (`src/controllers/user-controller.js`)
 
-```javascript
-const { userService } = require("../services");
-const logger = require("../utils/logger");
+### Controller (`src/controllers/user-controller.ts`)
+
+```typescript
+import type { Request, Response } from "express";
+import { userService } from "../services/user-service.js";
+import logger from "../utils/logger.js";
 
 class UserController {
-  async getById(req, res) {
+  async getById(req: Request, res: Response): Promise<void> {
     const user = await userService.getById(req.params.id);
     res.json({ status: "success", data: { user } });
   }
 
-  async create(req, res) {
+  async create(req: Request, res: Response): Promise<void> {
     const user = await userService.createUser(req.body);
     logger.info("User created", { userId: user.id });
     res.status(201).json({ status: "success", data: { user } });
   }
 }
+
+export const userController = new UserController();
+```
 
 module.exports = new UserController();
 ```
