@@ -25,6 +25,10 @@ const envSchema = z.object({
 
   // Redis (for rate limiting - optional for now)
   REDIS_URL: z.string().url().optional(),
+
+  // External APIs
+  JOKE_API_URL: z.string().url().optional(),
+  GDELT_DOC_API_URL: z.string().url().optional(),
 });
 
 /**

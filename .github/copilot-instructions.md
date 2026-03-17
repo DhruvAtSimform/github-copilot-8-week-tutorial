@@ -42,7 +42,7 @@ A production-grade REST API built with **Node.js**, **Express.js**, and **TypeSc
 
 Concise guidelines for maintaining code quality, security, and consistency in this Node.js Express project.
 
-> **Note**: Use separate `.github/copilot-instructions-*.md` files with `applyTo` glob patterns for feature-specific instructions (e.g., API routes, database models, auth).
+> **Note**: Use separate `.github/instructions/*.instructions.md` files (e.g., `.github/instructions/api.instructions.md`) with `applyTo` glob patterns for feature-specific instructions (e.g., API routes, database models, auth).
 
 ---
 
