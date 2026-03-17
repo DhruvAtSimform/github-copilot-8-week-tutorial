@@ -53,17 +53,14 @@ Never violate boundaries:
 - Keep each class focused on one responsibility.
 - Extract shared validation and handler wrappers to avoid duplication.
 
-Reusable async wrapper:
-
-```javascript
-const asyncHandler = (fn) => (req, res, next) =>
-  Promise.resolve(fn(req, res, next)).catch(next);
-```
-
 ## 4. Minimal End-to-End Example
 
 ### Route (`src/routes/user-routes.ts`)
 
+```javascript
+const express = require("express");
+const { userController } = require("../controllers");
+const { validateUserInput } = require("../middlewares/validators");
 ```typescript
 import { Router } from "express";
 import { userController } from "../controllers/user-controller.js";
