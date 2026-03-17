@@ -1,6 +1,8 @@
 import { Application, Request, Response, NextFunction } from 'express';
 import IndexController from '../controllers/index.js';
 import TimezoneController from '../controllers/timezoneController.js';
+import JokeController from '../controllers/jokeController.js';
+import GeopoliticalEventController from '../controllers/geopoliticalEventController.js';
 import AppError from '../utils/errors/AppError.js';
 import { validateRequest } from '../middlewares/validateRequest.js';
 import { getTimezonesQuerySchema } from '../validators/timezoneValidators.js';
@@ -25,6 +27,15 @@ const setRoutes = (app: Application): void => {
     TimezoneController.getTimezonesByCountry
   );
   app.get('/api/timezones/countries', TimezoneController.getAllCountries);
+
+  // Joke endpoint
+  app.get('/api/joke-of-day', JokeController.getJokeOfDay);
+
+  // Geopolitical event endpoint
+  app.get(
+    '/api/geopolitical-event-of-day',
+    GeopoliticalEventController.getGeopoliticalEventOfDay
+  );
 
   // Example: Route with synchronous response
   app.get('/api/example', (_req: Request, res: Response): void => {
