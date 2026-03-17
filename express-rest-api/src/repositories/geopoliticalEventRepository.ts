@@ -37,6 +37,8 @@ const GdeltResponseSchema = z.object({
 class GeopoliticalEventRepository {
   private readonly gdeltDocApiUrl: string;
 
+  private readonly requestTimeoutMs = 10000;
+
   private readonly query =
     '(theme:TERROR OR theme:US_FOREIGN_POLICY OR theme:WB_696_PUBLIC_SECTOR_MANAGEMENT OR theme:CRISISLEX_C07_SAFETY)';
 
@@ -49,6 +51,11 @@ class GeopoliticalEventRepository {
    * Fetch the most recent geopolitical event candidate from the last 24 hours
    */
   async fetchGeopoliticalEventOfDay(): Promise<GeopoliticalEventEntity> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => {
+      controller.abort();
+    }, this.requestTimeoutMs);
+
     try {
       const requestUrl = this._buildRequestUrl();
 
@@ -58,6 +65,7 @@ class GeopoliticalEventRepository {
           Accept: 'application/json',
           'User-Agent': 'express-rest-api/1.0 (+geopolitical-event-endpoint)',
         },
+        signal: controller.signal,
       });
 
       if (!response.ok) {
@@ -82,6 +90,16 @@ class GeopoliticalEventRepository {
       const payload: unknown = await response.json();
       return this._toEntity(payload);
     } catch (error: unknown) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        logger.error('GDELT provider request timed out', {
+          timeoutMs: this.requestTimeoutMs,
+        });
+        throw new AppError(
+          'Geopolitical provider request timed out',
+          504
+        );
+      }
+
       if (error instanceof AppError) {
         throw error;
       }
@@ -93,6 +111,8 @@ class GeopoliticalEventRepository {
         'Geopolitical event service is temporarily unavailable',
         503
       );
+    } finally {
+      clearTimeout(timeoutId);
     }
   }
 
