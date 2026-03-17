@@ -43,12 +43,20 @@ class JokeRepository {
    * Fetch a random joke from a third-party provider
    */
   async fetchRandomJoke(): Promise<JokeEntity> {
+    // Use AbortController to enforce an upper bound on provider latency
+    const abortController = new AbortController();
+    const requestTimeoutMs: number = Number(env.JOKE_API_TIMEOUT_MS ?? 5000);
+    const timeoutId: NodeJS.Timeout = setTimeout(() => {
+      abortController.abort();
+    }, Number.isFinite(requestTimeoutMs) && requestTimeoutMs > 0 ? requestTimeoutMs : 5000);
+
     try {
       const response = await fetch(this.jokeApiUrl, {
         method: 'GET',
         headers: {
           Accept: 'application/json',
         },
+        signal: abortController.signal,
       });
 
       if (!response.ok) {
@@ -66,10 +74,19 @@ class JokeRepository {
         throw error;
       }
 
+      if (error instanceof Error && error.name === 'AbortError') {
+        logger.error('Joke provider request timed out', {
+          timeoutMs: Number.isFinite(requestTimeoutMs) && requestTimeoutMs > 0 ? requestTimeoutMs : 5000,
+        });
+        throw new AppError('Joke provider request timed out', 504);
+      }
+
       logger.error('Error while fetching joke from provider', {
         error: error instanceof Error ? error.message : 'Unknown error',
       });
       throw new AppError('Joke service is temporarily unavailable', 503);
+    } finally {
+      clearTimeout(timeoutId);
     }
   }
 
