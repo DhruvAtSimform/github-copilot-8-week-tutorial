@@ -101,5 +101,5 @@ export default tseslint.config(
       'n/no-unsupported-features/es-syntax': 'off',
       'n/no-missing-import': 'off',
     },
-  },
+  }
 );
