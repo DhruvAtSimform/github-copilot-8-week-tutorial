@@ -4,6 +4,7 @@ import pluginN from 'eslint-plugin-n';
 import pluginPromise from 'eslint-plugin-promise';
 import pluginSecurity from 'eslint-plugin-security';
 import globals from 'globals';
+import eslintConfigPrettier from 'eslint-config-prettier';
 
 export default tseslint.config(
   // Base recommended configs
@@ -53,12 +54,6 @@ export default tseslint.config(
     },
 
     rules: {
-      // Formatting rules
-      indent: ['error', 2],
-      'linebreak-style': ['error', 'unix'],
-      quotes: ['error', 'single'],
-      semi: ['error', 'always'],
-
       // TypeScript rules
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': [
@@ -101,5 +96,8 @@ export default tseslint.config(
       'n/no-unsupported-features/es-syntax': 'off',
       'n/no-missing-import': 'off',
     },
-  }
+  },
+
+  // Prettier config must be last to override conflicting formatting rules
+  eslintConfigPrettier
 );
