@@ -30,7 +30,11 @@ class TimezoneController {
    * @param _next - Express next middleware function
    */
 
-  static readonly getTimezonesByCountry = (req: Request, res: Response, _next: NextFunction): void => {
+  static readonly getTimezonesByCountry = (
+    req: Request,
+    res: Response,
+    _next: NextFunction
+  ): void => {
     const { countryCode, clientCountry, fallback } = req.query;
 
     // Extract client details for timezone resolution
@@ -46,13 +50,13 @@ class TimezoneController {
     // Call appropriate service method
     const result = useFallback
       ? timezoneService.getTimezonesWithFallback(
-        (countryCode as string) || null,
-        clientDetails
-      )
+          (countryCode as string) || null,
+          clientDetails
+        )
       : timezoneService.getTimezonesByCountry(
-        (countryCode as string) || null,
-        clientDetails
-      );
+          (countryCode as string) || null,
+          clientDetails
+        );
 
     logger.info('Timezone request processed successfully', {
       countryCode: result.countryCode,
@@ -81,7 +85,11 @@ class TimezoneController {
    * @param _next - Express next middleware function
    */
 
-  static readonly getAllCountries = (_req: Request, res: Response, _next: NextFunction) : void => {
+  static readonly getAllCountries = (
+    _req: Request,
+    res: Response,
+    _next: NextFunction
+  ): void => {
     const countries = timezoneRepository.getAllCountries();
 
     logger.info('All countries retrieved', {
@@ -106,7 +114,11 @@ class TimezoneController {
    * @param _next - Express next middleware function
    */
 
-  static readonly addTimezone = (req: Request, res: Response, _next: NextFunction): void => {
+  static readonly addTimezone = (
+    req: Request,
+    res: Response,
+    _next: NextFunction
+  ): void => {
     const { countryCode } = req.params as { countryCode: string };
     const { timezone } = req.body as { timezone?: unknown };
 
@@ -144,7 +156,11 @@ class TimezoneController {
    * @param _next - Express next middleware function
    */
 
-  static readonly removeTimezone = (req: Request, res: Response, _next: NextFunction): void => {
+  static readonly removeTimezone = (
+    req: Request,
+    res: Response,
+    _next: NextFunction
+  ): void => {
     const params = req.params as { countryCode: string; timezone: string };
     const { countryCode, timezone } = params;
 
@@ -165,6 +181,7 @@ class TimezoneController {
         count: result.timezones.length,
       },
     });
-  };}
+  };
+}
 
 export default TimezoneController;
