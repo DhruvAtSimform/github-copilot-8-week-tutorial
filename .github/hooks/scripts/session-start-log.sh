@@ -14,5 +14,3 @@ TIMESTAMP=$(echo "$INPUT" | jq -r '.timestamp // 0')
 
 # Session start hook output is ignored; append a simple echo-based audit line.
 echo "session_start source=${SOURCE} timestamp=${TIMESTAMP}" >> "$LOG_FILE"
-
-exit 0
